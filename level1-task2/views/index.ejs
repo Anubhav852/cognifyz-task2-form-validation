@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= title %></title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <div class="container">
+    <h1>Registration Form</h1>
+
+    <!-- Show server-side errors -->
+    <% if (errors.length > 0) { %>
+      <div class="error-box">
+        <ul>
+          <% errors.forEach(error => { %>
+            <li><%= error %></li>
+          <% }) %>
+        </ul>
+      </div>
+    <% } %>
+
+    <form action="/submit" method="POST" onsubmit="return validateForm()">
+
+      <div class="form-group">
+        <label for="name">Full Name</label>
+        <input type="text" id="name" name="name" placeholder="Enter your full name">
+        <span class="field-error" id="nameError"></span>
+      </div>
+
+      <div class="form-group">
+        <label for="email">Email Address</label>
+        <input type="email" id="email" name="email" placeholder="Enter your email">
+        <span class="field-error" id="emailError"></span>
+      </div>
+
+      <div class="form-group">
+        <label for="phone">Phone Number</label>
+        <input type="tel" id="phone" name="phone" placeholder="Enter 10-digit phone number">
+        <span class="field-error" id="phoneError"></span>
+      </div>
+
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input type="password" id="password" name="password" placeholder="Minimum 8 characters">
+        <span class="field-error" id="passwordError"></span>
+        <div class="password-strength" id="strengthBar">
+          <div class="strength-fill" id="strengthFill"></div>
+        </div>
+        <span class="strength-label" id="strengthLabel"></span>
+      </div>
+
+      <div class="form-group">
+        <label for="age">Age</label>
+        <input type="number" id="age" name="age" placeholder="Enter your age (18-100)">
+        <span class="field-error" id="ageError"></span>
+      </div>
+
+      <button type="submit">Submit</button>
+    </form>
+  </div>
+
+  <script>
+    // Password strength checker
+    document.getElementById('password').addEventListener('input', function () {
+      const val = this.value;
+      const fill = document.getElementById('strengthFill');
+      const label = document.getElementById('strengthLabel');
+      let strength = 0;
+
+      if (val.length >= 8) strength++;
+      if (/[A-Z]/.test(val)) strength++;
+      if (/[0-9]/.test(val)) strength++;
+      if (/[^A-Za-z0-9]/.test(val)) strength++;
+
+      const levels = ['', 'Weak', 'Fair', 'Good', 'Strong'];
+      const colors = ['', '#e74c3c', '#f39c12', '#3498db', '#2ecc71'];
+      const widths = ['0%', '25%', '50%', '75%', '100%'];
+
+      fill.style.width = widths[strength];
+      fill.style.background = colors[strength];
+      label.textContent = levels[strength];
+      label.style.color = colors[strength];
+    });
+
+    // Client-side validation
+    function validateForm() {
+      let valid = true;
+
+      const name = document.getElementById('name').value.trim();
+      const email = document.getElementById('email').value.trim();
+      const phone = document.getElementById('phone').value.trim();
+      const password = document.getElementById('password').value;
+      const age = document.getElementById('age').value;
+
+      // Clear previous errors
+      document.querySelectorAll('.field-error').forEach(e => e.textContent = '');
+
+      if (name.length < 2) {
+        document.getElementById('nameError').textContent = 'Name must be at least 2 characters';
+        valid = false;
+      }
+
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        document.getElementById('emailError').textContent = 'Enter a valid email address';
+        valid = false;
+      }
+
+      if (!/^\d{10}$/.test(phone)) {
+        document.getElementById('phoneError').textContent = 'Phone must be exactly 10 digits';
+        valid = false;
+      }
+
+      if (password.length < 8) {
+        document.getElementById('passwordError').textContent = 'Password must be at least 8 characters';
+        valid = false;
+      }
+
+      if (!age || age < 18 || age > 100) {
+        document.getElementById('ageError').textContent = 'Age must be between 18 and 100';
+        valid = false;
+      }
+
+      return valid;
+    }
+  </script>
+</body>
+</html>

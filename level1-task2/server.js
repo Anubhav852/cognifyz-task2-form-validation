@@ -46,4 +46,17 @@ app.post('/submit', (req, res) => {
 
   // If errors, re-render form with errors
   if (errors.length > 0) {
-    return
+    return res.render('index', { title: 'Registration Form', errors });
+  }
+
+  // Store valid data in temporary storage
+  const submission = { name, email, phone, password, age, submittedAt: new Date().toLocaleString() };
+  submissions.push(submission);
+
+  res.render('result', { submission });
+});
+
+const PORT = 3000;
+app.listen(PORT, () => {
+  console.log(`Server running at http://localhost:${PORT}`);
+});
